@@ -1,0 +1,31 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/1/DMux8Way.hdl
+/**
+ * 8-way demultiplexor:
+ * [a, b, c, d, e, f, g, h] = [in, 0,  0,  0,  0,  0,  0,  0] if sel = 000
+ *                            [0, in,  0,  0,  0,  0,  0,  0] if sel = 001
+ *                            [0,  0, in,  0,  0,  0,  0,  0] if sel = 010
+ *                            [0,  0,  0, in,  0,  0,  0,  0] if sel = 011
+ *                            [0,  0,  0,  0, in,  0,  0,  0] if sel = 100
+ *                            [0,  0,  0,  0,  0, in,  0,  0] if sel = 101
+ *                            [0,  0,  0,  0,  0,  0, in,  0] if sel = 110
+ *                            [0,  0,  0,  0,  0,  0,  0, in] if sel = 111
+ */
+CHIP DMux8Way {
+    IN in, sel[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+    // First, split `in` into two lines:
+    //   abcdLine gets `in` if sel[2] == 0, else 0
+    //   efghLine gets `in` if sel[2] == 1, else 0
+    DMux(in=in, sel=sel[2], a=abcdLine, b=efghLine);
+
+    // Then, split abcdLine into four lines (a,b,c,d), using sel[1..0]
+    DMux4Way(in=abcdLine, sel=sel[0..1], a=a, b=b, c=c, d=d);
+
+    // Similarly, split efghLine into four lines (e,f,g,h), using sel[1..0]
+    DMux4Way(in=efghLine, sel=sel[0..1], a=e, b=f, c=g, d=h);
+}
